@@ -11,10 +11,16 @@ header.innerHTML = gameName;
 
 // Step 1 - Button
 const button = document.createElement("button");
-let appCount = 0;
 button.textContent = '📄';
+
+// Step 2 - Counter
+const appDisplay = document.createElement('div');
+let appCount: number = 0;
+appDisplay.textContent = `${appCount} applications have been sent!`;
+
 button.addEventListener('click', () => {
     appCount++;
+    appDisplay.textContent = `${appCount} applications have been sent!`;
 });
 button.style.padding = '10px 10px';
 button.style.fontSize = '28px';
@@ -23,3 +29,4 @@ console.log(appCount);
 
 app.append(header);
 app.append(button);
+app.append(appDisplay);
