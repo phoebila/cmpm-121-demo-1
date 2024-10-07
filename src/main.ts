@@ -12,15 +12,19 @@ header.innerHTML = gameName;
 // Step 9 - Refactoring -----------------------------------
 interface Upgrades {
     name: string,
+    description: string,
     cost: number,
-    rate: number
+    rate: number,
 }
 
 const availableUpgrades: Upgrades[] = [
-        {name: "Premium", cost: 10, rate: 1},
-        {name: "Indeed", cost: 10, rate: .1},
-        {name: "Handshake", cost: 100, rate: 2},
-        {name: "Glassdoor", cost: 1000, rate: 50}
+        {name: "Premium", description: "LinkedIn Premium! ",cost: 10, rate: 1},
+        {name: "Indeed", description: "Indeed Membership!",cost: 10, rate: .1},
+        {name: "Handshake", description: "Handshake Plus!", cost: 100, rate: 2},
+        {name: "Glassdoor", description: "Glassdoor Unlimited!",cost: 1000, rate: 50},
+        // Step 10 - Content Expansion --------------------------
+        {name: "Recruiter", description: "Helps you find jobs!",cost: 50, rate: 100},
+        {name: "My dad is the CEO", description: "My dad's the CEO, so it wasn't an issue to find a job at the company!",cost: 500000, rate: 0},
 ]
 
 // mapping to store the cost of each upgrade and the amount of each upgrade purchased
@@ -41,7 +45,7 @@ availableUpgrades.forEach(upgrade => {
     
     const upgradeButtonText = () => {
         const currCost = upgradeCosts.get(upgrade.name)!;
-        upgradeButton.textContent = `Buy ${upgrade.name} (Cost: ${currCost.toFixed(2)} units, +${upgrade.rate} units/sec)`;
+        upgradeButton.textContent = `Buy ${upgrade.name}: ${upgrade.description} (Cost: ${currCost.toFixed(2)} units, +${upgrade.rate} units/sec)`;
     }
 
     upgradeButtonText();
@@ -91,7 +95,7 @@ button.addEventListener('click', () => {
 
 // Step 4 - Continuous Growth ------------------------------
 let timeStamp: number = 0;
-let appGrowth: number = 0; //base growth rate
+let appGrowth: number = 1; //base growth rate
 
 // update counter calc to increase based on time passed!!!
 const updateApps = (timestamp: number) => {
@@ -99,7 +103,7 @@ const updateApps = (timestamp: number) => {
     const delta = timestamp - timeStamp;
 
     // calc increment based on time
-    const increment = (delta / 1000); // Increment by (delta ms / 1000 ms)
+    const increment = (delta / 1000) * appGrowth; // Increment by (delta ms / 1000 ms)
     appCount += increment;
 
     // Update the button
