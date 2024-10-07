@@ -9,6 +9,63 @@ document.title = gameName;
 const header = document.createElement("h1");
 header.innerHTML = gameName;
 
+// Step 9 - Refactoring -----------------------------------
+interface Upgrades {
+    name: string,
+    cost: number,
+    rate: number
+}
+
+const availableUpgrades: Upgrades[] = [
+        {name: "Premium", cost: 10, rate: 1},
+        {name: "Indeed", cost: 10, rate: .1},
+        {name: "Handshake", cost: 100, rate: 2},
+        {name: "Glassdoor", cost: 1000, rate: 50}
+]
+
+// mapping to store the cost of each upgrade and the amount of each upgrade purchased
+const upgradeCosts = new Map<string, number>();
+const upgradeCounts = new Map<string, number>();
+
+availableUpgrades.forEach(upgrade => {
+    upgradeCosts.set(upgrade.name, upgrade.cost);
+    upgradeCounts.set(upgrade.name, 0);
+});
+
+// Step 9.5 - Upgrades Container ------------------------------
+const upgradeContainer = document.createElement('div');
+
+// button creation for each upgrade
+availableUpgrades.forEach(upgrade => {
+    const upgradeButton = document.createElement('button');
+    
+    const upgradeButtonText = () => {
+        const currCost = upgradeCosts.get(upgrade.name)!;
+        upgradeButton.textContent = `Buy ${upgrade.name} (Cost: ${currCost.toFixed(2)} units, +${upgrade.rate} units/sec)`;
+    }
+
+    upgradeButtonText();
+    upgradeButton.disabled = true;
+
+    // adding listener to each upgrade button
+    upgradeButton.addEventListener('click', () => {
+        const currCost = upgradeCosts.get(upgrade.name)!;
+
+        if (appCount >= currCost){
+            appCount -= currCost;
+            appGrowth += upgrade.rate; //increase growth rate
+
+            upgradeCounts.set(upgrade.name, upgradeCounts.get(upgrade.name)! + 1); //increase purchase count
+
+            // increasing price by 15%
+            upgradeCosts.set(upgrade.name, currCost * 1.15);
+            upgradeButtonText();
+            updateAppDisplay();
+        }
+    });
+    upgradeContainer.append(upgradeButton);
+});
+
 // Step 1 - Button ------------------------------------
 const button = document.createElement("button");
 button.textContent = '📄';
@@ -34,6 +91,7 @@ button.addEventListener('click', () => {
 
 // Step 4 - Continuous Growth ------------------------------
 let timeStamp: number = 0;
+let appGrowth: number = 0; //base growth rate
 
 // update counter calc to increase based on time passed!!!
 const updateApps = (timestamp: number) => {
@@ -57,77 +115,77 @@ const updateApps = (timestamp: number) => {
 requestAnimationFrame(updateApps);
 
 // Step 5 - Upgrades PEOPLE! --------------------------
-let appGrowth: number = 0; //no increase
+// let appGrowth: number = 0; //no increase
 
-// creating LinkedIn Premium button
-const premiumLI = document.createElement('button');
-premiumLI.textContent = "Buy LinkedIn Premium (10 applications)";
-premiumLI.disabled = true; //starting disabled
-let premiumLICount: number = 0;
-let premiumLICost: number = 10;
+// // creating LinkedIn Premium button
+// const premiumLI = document.createElement('button');
+// premiumLI.textContent = "Buy LinkedIn Premium (10 applications)";
+// premiumLI.disabled = true; //starting disabled
+// let premiumLICount: number = 0;
+// let premiumLICost: number = 10;
 
-// button listener for premium
-premiumLI.addEventListener('click', () => {
-    if (appCount >= 10){
-        appCount-= 10;
-        appGrowth += 1;
-        premiumLICount++;
-        premiumLICost *= 1.15; //increase cost by 15%
-        updateAppDisplay();
-    }
-})
+// // button listener for premium
+// premiumLI.addEventListener('click', () => {
+//     if (appCount >= 10){
+//         appCount-= 10;
+//         appGrowth += 1;
+//         premiumLICount++;
+//         premiumLICost *= 1.15; //increase cost by 15%
+//         updateAppDisplay();
+//     }
+// })
 
 // Step 6 - Multiple Upgrades/Status --------------------------
 // indeed upgrade
-const indeed = document.createElement('button');
-indeed.textContent = "Buy Indeed (10 applications)";
-indeed.disabled = true;
-let indeedCount: number = 0;
-let indeedCost: number = 10;
+// const indeed = document.createElement('button');
+// indeed.textContent = "Buy Indeed (10 applications)";
+// indeed.disabled = true;
+// let indeedCount: number = 0;
+// let indeedCost: number = 10;
 
-indeed.addEventListener('click', () => {
-    if (appCount >= 10){
-        appCount -= 10;
-        appGrowth += .1; //increase .1 units per sec
-        indeedCount++;
-        indeedCost *= 1.15; //increase cost by 15%
-        updateAppDisplay();
-    }
-})
+// indeed.addEventListener('click', () => {
+//     if (appCount >= 10){
+//         appCount -= 10;
+//         appGrowth += .1; //increase .1 units per sec
+//         indeedCount++;
+//         indeedCost *= 1.15; //increase cost by 15%
+//         updateAppDisplay();
+//     }
+// })
 
-// handshake upgrade
-const handshake = document.createElement('button');
-handshake.textContent = "Buy Handshake (100 applications)";
-handshake.disabled = true;
-let handshakeCount: number = 0;
-let handshakeCost: number = 100;
+// // handshake upgrade
+// const handshake = document.createElement('button');
+// handshake.textContent = "Buy Handshake (100 applications)";
+// handshake.disabled = true;
+// let handshakeCount: number = 0;
+// let handshakeCost: number = 100;
 
-handshake.addEventListener('click', () => {
-    if (appCount >= 100){
-        appCount -= 100;
-        appGrowth += 2; //increase 2 units per sec
-        handshakeCount++;
-        handshakeCost *= 1.15; //increase cost by 15%
-        updateAppDisplay();
-    }
-})
+// handshake.addEventListener('click', () => {
+//     if (appCount >= 100){
+//         appCount -= 100;
+//         appGrowth += 2; //increase 2 units per sec
+//         handshakeCount++;
+//         handshakeCost *= 1.15; //increase cost by 15%
+//         updateAppDisplay();
+//     }
+// })
 
-// glassdoor upgrade
-const glassdoor = document.createElement('button');
-glassdoor.textContent = "Buy Glassdoor (1000 applications)";
-glassdoor.disabled = true;
-let glassdoorCount: number = 0;
-let glassdoorCost: number = 1000;
+// // glassdoor upgrade
+// const glassdoor = document.createElement('button');
+// glassdoor.textContent = "Buy Glassdoor (1000 applications)";
+// glassdoor.disabled = true;
+// let glassdoorCount: number = 0;
+// let glassdoorCost: number = 1000;
 
-glassdoor.addEventListener('click', () => {
-    if (appCount >= 1000){
-        appCount -= 1000;
-        appGrowth += 50; //increase 50 units per sec
-        glassdoorCount++;
-        glassdoorCost *= 1.15; //increase cost by 15%
-        updateAppDisplay();
-    }
-})
+// glassdoor.addEventListener('click', () => {
+//     if (appCount >= 1000){
+//         appCount -= 1000;
+//         appGrowth += 50; //increase 50 units per sec
+//         glassdoorCount++;
+//         glassdoorCost *= 1.15; //increase cost by 15%
+//         updateAppDisplay();
+//     }
+// })
 
 // Status Display
 const statusDisplay = document.createElement('div');
@@ -143,27 +201,20 @@ const updateAppDisplay = () => {
 
     // Step 7 - Price Increases --------------------------
     // Enable/disable upgrades based on the current count
-    premiumLI.disabled = appCount < premiumLICost;
-    indeed.disabled = appCount < indeedCost;
-    handshake.disabled = appCount < handshakeCost;
-    glassdoor.disabled = appCount < glassdoorCost;
+    availableUpgrades.forEach(upgrade => {
+        const currentCost = upgradeCosts.get(upgrade.name)!;
+        const upgradeButton = upgradeContainer.querySelector(`button:nth-child(${availableUpgrades.indexOf(upgrade) + 1})`) as HTMLButtonElement;
+        upgradeButton.disabled = appCount < currentCost;
+  });
 
-    // Update the upgrade buttons with their new costs
-    indeed.textContent = `Buy Indeed (Cost: ${indeedCost.toFixed(2)} units, +0.1 units/sec)`;
-    handshake.textContent = `Buy Handshake (Cost: ${handshakeCost.toFixed(2)} units, +2.0 units/sec)`;
-    glassdoor.textContent = `Buy Glassdoor (Cost: ${glassdoorCost.toFixed(2)} units, +50 units/sec)`;
+  // Update the growth rate display
+  growthRateDisplay.textContent = `Current growth rate: ${appCount.toFixed(1)} applications/sec`;
 
-    // Update the growth rate display
-    growthRateDisplay.textContent = `Current growth rate: ${appGrowth.toFixed(1)} applications/sec`;
-
-    // Update the count of items purchased
-    upgradeCountDisplay.innerHTML = `
-        Upgrades Purchased: <br>
-        LinkedIn Premium: ${premiumLICount} <br>
-        Indeed: ${indeedCount} <br>
-        Handshake: ${handshakeCount} <br>
-        Glassdoor: ${glassdoorCount}
-    `;
+  // Update the count of upgrades purchased
+  upgradeCountDisplay.innerHTML = `
+      Upgrades Purchased: <br>
+      ${availableUpgrades.map(upgrade => `Upgrade ${upgrade.name}: ${upgradeCounts.get(upgrade.name)}`).join('<br>')}
+  `;
 }
 
 // STYLING  ---------------------------------
@@ -175,10 +226,9 @@ const styleButton = (button: HTMLButtonElement) => {
 }
 
 // Style the premium button
-styleButton(premiumLI);
-styleButton(indeed);
-styleButton(handshake);
-styleButton(glassdoor);
+// Style all upgrade buttons in the container
+upgradeContainer.childNodes.forEach(button => styleButton(button as HTMLButtonElement));
+
 
 // styling the button
 button.style.padding = '10px 10px';
@@ -192,8 +242,5 @@ statusDisplay.style.fontSize = '18px';
 app.append(header);
 app.append(button);
 app.append(appDisplay);
-app.append(premiumLI);
-app.append(indeed);
-app.append(handshake);
-app.append(glassdoor);
+app.append(upgradeContainer);
 app.append(statusDisplay);
