@@ -64,6 +64,7 @@ const premiumLI = document.createElement('button');
 premiumLI.textContent = "Buy LinkedIn Premium (10 applications)";
 premiumLI.disabled = true; //starting disabled
 let premiumLICount: number = 0;
+let premiumLICost: number = 10;
 
 // button listener for premium
 premiumLI.addEventListener('click', () => {
@@ -71,6 +72,7 @@ premiumLI.addEventListener('click', () => {
         appCount-= 10;
         appGrowth += 1;
         premiumLICount++;
+        premiumLICost *= 1.15; //increase cost by 15%
         updateAppDisplay();
     }
 })
@@ -81,12 +83,14 @@ const indeed = document.createElement('button');
 indeed.textContent = "Buy Indeed (10 applications)";
 indeed.disabled = true;
 let indeedCount: number = 0;
+let indeedCost: number = 10;
 
 indeed.addEventListener('click', () => {
     if (appCount >= 10){
         appCount -= 10;
         appGrowth += .1; //increase .1 units per sec
         indeedCount++;
+        indeedCost *= 1.15; //increase cost by 15%
         updateAppDisplay();
     }
 })
@@ -96,12 +100,14 @@ const handshake = document.createElement('button');
 handshake.textContent = "Buy Handshake (100 applications)";
 handshake.disabled = true;
 let handshakeCount: number = 0;
+let handshakeCost: number = 100;
 
 handshake.addEventListener('click', () => {
     if (appCount >= 100){
         appCount -= 100;
         appGrowth += 2; //increase 2 units per sec
         handshakeCount++;
+        handshakeCost *= 1.15; //increase cost by 15%
         updateAppDisplay();
     }
 })
@@ -111,12 +117,14 @@ const glassdoor = document.createElement('button');
 glassdoor.textContent = "Buy Glassdoor (1000 applications)";
 glassdoor.disabled = true;
 let glassdoorCount: number = 0;
+let glassdoorCost: number = 1000;
 
 glassdoor.addEventListener('click', () => {
     if (appCount >= 1000){
         appCount -= 1000;
         appGrowth += 50; //increase 50 units per sec
         glassdoorCount++;
+        glassdoorCost *= 1.15; //increase cost by 15%
         updateAppDisplay();
     }
 })
@@ -132,10 +140,18 @@ statusDisplay.append(upgradeCountDisplay);
 // updating apps display and enabling/disabling upgrade buttons
 const updateAppDisplay = () => {
     appDisplay.textContent = `${Math.floor(appCount)} applications have been sent!`;
-    premiumLI.disabled = appCount < 10;
-    indeed.disabled = appCount < 10;
-    handshake.disabled = appCount < 100;
-    glassdoor.disabled = appCount < 1000;
+
+    // Step 7 - Price Increases --------------------------
+    // Enable/disable upgrades based on the current count
+    premiumLI.disabled = appCount < premiumLICost;
+    indeed.disabled = appCount < indeedCost;
+    handshake.disabled = appCount < handshakeCost;
+    glassdoor.disabled = appCount < glassdoorCost;
+
+    // Update the upgrade buttons with their new costs
+    indeed.textContent = `Buy Indeed (Cost: ${indeedCost.toFixed(2)} units, +0.1 units/sec)`;
+    handshake.textContent = `Buy Handshake (Cost: ${handshakeCost.toFixed(2)} units, +2.0 units/sec)`;
+    glassdoor.textContent = `Buy Glassdoor (Cost: ${glassdoorCost.toFixed(2)} units, +50 units/sec)`;
 
     // Update the growth rate display
     growthRateDisplay.textContent = `Current growth rate: ${appGrowth.toFixed(1)} applications/sec`;
@@ -149,7 +165,6 @@ const updateAppDisplay = () => {
         Glassdoor: ${glassdoorCount}
     `;
 }
-
 
 // STYLING  ---------------------------------
 // making the button style into a function
