@@ -85,14 +85,6 @@ button.addEventListener('click', () => {
     updateAppDisplay();
 });
 
-// Step 3 - Automatic clicker! ---------------------------------
-// const applicationClicker = () => {
-//     appCount++;
-//     appDisplay.textContent = `${appCount} applications have been sent!`;
-// }
-
-// setInterval(applicationClicker, 100);
-
 // Step 4 - Continuous Growth ------------------------------
 let timeStamp: number = 0;
 let appGrowth: number = 1; //base growth rate
@@ -117,79 +109,6 @@ const updateApps = (timestamp: number) => {
 }
 // Start the animation
 requestAnimationFrame(updateApps);
-
-// Step 5 - Upgrades PEOPLE! --------------------------
-// let appGrowth: number = 0; //no increase
-
-// // creating LinkedIn Premium button
-// const premiumLI = document.createElement('button');
-// premiumLI.textContent = "Buy LinkedIn Premium (10 applications)";
-// premiumLI.disabled = true; //starting disabled
-// let premiumLICount: number = 0;
-// let premiumLICost: number = 10;
-
-// // button listener for premium
-// premiumLI.addEventListener('click', () => {
-//     if (appCount >= 10){
-//         appCount-= 10;
-//         appGrowth += 1;
-//         premiumLICount++;
-//         premiumLICost *= 1.15; //increase cost by 15%
-//         updateAppDisplay();
-//     }
-// })
-
-// Step 6 - Multiple Upgrades/Status --------------------------
-// indeed upgrade
-// const indeed = document.createElement('button');
-// indeed.textContent = "Buy Indeed (10 applications)";
-// indeed.disabled = true;
-// let indeedCount: number = 0;
-// let indeedCost: number = 10;
-
-// indeed.addEventListener('click', () => {
-//     if (appCount >= 10){
-//         appCount -= 10;
-//         appGrowth += .1; //increase .1 units per sec
-//         indeedCount++;
-//         indeedCost *= 1.15; //increase cost by 15%
-//         updateAppDisplay();
-//     }
-// })
-
-// // handshake upgrade
-// const handshake = document.createElement('button');
-// handshake.textContent = "Buy Handshake (100 applications)";
-// handshake.disabled = true;
-// let handshakeCount: number = 0;
-// let handshakeCost: number = 100;
-
-// handshake.addEventListener('click', () => {
-//     if (appCount >= 100){
-//         appCount -= 100;
-//         appGrowth += 2; //increase 2 units per sec
-//         handshakeCount++;
-//         handshakeCost *= 1.15; //increase cost by 15%
-//         updateAppDisplay();
-//     }
-// })
-
-// // glassdoor upgrade
-// const glassdoor = document.createElement('button');
-// glassdoor.textContent = "Buy Glassdoor (1000 applications)";
-// glassdoor.disabled = true;
-// let glassdoorCount: number = 0;
-// let glassdoorCost: number = 1000;
-
-// glassdoor.addEventListener('click', () => {
-//     if (appCount >= 1000){
-//         appCount -= 1000;
-//         appGrowth += 50; //increase 50 units per sec
-//         glassdoorCount++;
-//         glassdoorCost *= 1.15; //increase cost by 15%
-//         updateAppDisplay();
-//     }
-// })
 
 // Status Display
 const statusDisplay = document.createElement('div');
