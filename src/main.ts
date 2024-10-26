@@ -2,168 +2,128 @@ import "./style.css";
 
 const app: HTMLDivElement = document.querySelector("#app")!;
 
-const gameName = "Application Clicker";
+const gameConfig = {
+    name: "Application Clicker",
+    upgrades: [
+        {name: "Premium", description: "LinkedIn Premium!", cost: 10, rate: 1},
+        {name: "Indeed", description: "Indeed Membership!", cost: 10, rate: 0.1},
+        {name: "Handshake", description: "Handshake Plus!", cost: 100, rate: 2},
+        {name: "Glassdoor", description: "Glassdoor Unlimited!", cost: 1000, rate: 50},
+        {name: "Recruiter", description: "Helps you find jobs!", cost: 50, rate: 100},
+        {name: "My dad is the CEO", description: "Easy job entry!", cost: 500000, rate: 0}
+    ],
+    style: {
+        button: { padding: '10px 20px', fontSize: '16px', marginTop: '20px' },
+        mainButton: { padding: '10px 10px', fontSize: '28px', marginTop: '10px' },
+        statusDisplay: { marginTop: '20px', fontSize: '18px' }
+    }
+};
 
-document.title = gameName;
-
+// Set title and header text from config
+document.title = gameConfig.name;
 const header = document.createElement("h1");
-header.innerHTML = gameName;
+header.innerHTML = gameConfig.name;
 
-// Step 9 - Refactoring -----------------------------------
-interface Upgrades {
+// Utility function for styling elements
+const styleElement = (element: HTMLElement, style: {[key: string]: string}) => {
+    Object.assign(element.style, style);
+};
+
+// State management
+interface Upgrade {
     name: string,
     description: string,
     cost: number,
     rate: number,
 }
 
-const availableUpgrades: Upgrades[] = [
-        {name: "Premium", description: "LinkedIn Premium! ",cost: 10, rate: 1},
-        {name: "Indeed", description: "Indeed Membership!",cost: 10, rate: .1},
-        {name: "Handshake", description: "Handshake Plus!", cost: 100, rate: 2},
-        {name: "Glassdoor", description: "Glassdoor Unlimited!",cost: 1000, rate: 50},
-        // Step 10 - Content Expansion --------------------------
-        {name: "Recruiter", description: "Helps you find jobs!",cost: 50, rate: 100},
-        {name: "My dad is the CEO", description: "My dad's the CEO, so it wasn't an issue to find a job at the company!",cost: 500000, rate: 0},
-]
-
-// mapping to store the cost of each upgrade and the amount of each upgrade purchased
 const upgradeCosts = new Map<string, number>();
 const upgradeCounts = new Map<string, number>();
 
-availableUpgrades.forEach(upgrade => {
+gameConfig.upgrades.forEach(upgrade => {
     upgradeCosts.set(upgrade.name, upgrade.cost);
     upgradeCounts.set(upgrade.name, 0);
 });
 
-// Step 9.5 - Upgrades Container ------------------------------
+// Create upgrade buttons from config data
 const upgradeContainer = document.createElement('div');
-
-// button creation for each upgrade
-availableUpgrades.forEach(upgrade => {
+gameConfig.upgrades.forEach(upgrade => {
     const upgradeButton = document.createElement('button');
-    
-    const upgradeButtonText = () => {
+    const updateButtonText = () => {
         const currCost = upgradeCosts.get(upgrade.name)!;
         upgradeButton.textContent = `Buy ${upgrade.name}: ${upgrade.description} (Cost: ${currCost.toFixed(2)} units, +${upgrade.rate} units/sec)`;
-    }
+    };
 
-    upgradeButtonText();
+    updateButtonText();
     upgradeButton.disabled = true;
-
-    // adding listener to each upgrade button
-    upgradeButton.addEventListener('click', () => {
-        const currCost = upgradeCosts.get(upgrade.name)!;
-
-        if (appCount >= currCost){
-            appCount -= currCost;
-            appGrowth += upgrade.rate; //increase growth rate
-
-            upgradeCounts.set(upgrade.name, upgradeCounts.get(upgrade.name)! + 1); //increase purchase count
-
-            // increasing price by 15%
-            upgradeCosts.set(upgrade.name, currCost * 1.15);
-            upgradeButtonText();
-            updateAppDisplay();
-        }
-    });
+    upgradeButton.addEventListener('click', () => purchaseUpgrade(upgrade, upgradeButton, updateButtonText));
+    styleElement(upgradeButton, gameConfig.style.button);
     upgradeContainer.append(upgradeButton);
 });
 
-// Step 1 - Button ------------------------------------
+// Button for sending applications
 const button = document.createElement("button");
 button.textContent = '📄';
+styleElement(button, gameConfig.style.mainButton);
 
-// Step 2 - Counter -----------------------------------
+// Display for sent applications
 const appDisplay = document.createElement('div');
 let appCount: number = 0;
 appDisplay.textContent = `${appCount} applications have been sent!`;
 
-// listener for when the button is clicked
+// Growth over time
+let timeStamp: number = 0;
+let appGrowth: number = 1;
+
+// Animation loop for continuous growth
+const updateApps = (timestamp: number) => {
+    if (!timeStamp) timeStamp = timestamp;
+    const delta = timestamp - timeStamp;
+    appCount += (delta / 1000) * appGrowth;
+    updateAppDisplay();
+    timeStamp = timestamp;
+    requestAnimationFrame(updateApps);
+};
+
+// Purchase upgrade function
+const purchaseUpgrade = (upgrade: Upgrade, button: HTMLButtonElement, updateText: Function) => {
+    const currCost = upgradeCosts.get(upgrade.name)!;
+    if (appCount >= currCost) {
+        appCount -= currCost;
+        appGrowth += upgrade.rate;
+        upgradeCounts.set(upgrade.name, upgradeCounts.get(upgrade.name)! + 1);
+        upgradeCosts.set(upgrade.name, currCost * 1.15);
+        updateText();
+        updateAppDisplay();
+    }
+};
+
+// Display sections for app count and upgrades
+const statusDisplay = document.createElement('div');
+const growthRateDisplay = document.createElement('div');
+const upgradeCountDisplay = document.createElement('div');
+statusDisplay.append(growthRateDisplay, upgradeCountDisplay);
+styleElement(statusDisplay, gameConfig.style.statusDisplay);
+
+const updateAppDisplay = () => {
+    appDisplay.textContent = `${Math.floor(appCount)} applications have been sent!`;
+    gameConfig.upgrades.forEach(upgrade => {
+        const currentCost = upgradeCosts.get(upgrade.name)!;
+        const upgradeButton = upgradeContainer.querySelector(`button:nth-child(${gameConfig.upgrades.indexOf(upgrade) + 1})`) as HTMLButtonElement;
+        upgradeButton.disabled = appCount < currentCost;
+    });
+    growthRateDisplay.textContent = `Current growth rate: ${appGrowth.toFixed(1)} applications/sec`;
+    upgradeCountDisplay.innerHTML = `
+        Upgrades Purchased: <br>
+        ${gameConfig.upgrades.map(upgrade => `Upgrade ${upgrade.name}: ${upgradeCounts.get(upgrade.name)}`).join('<br>')}
+    `;
+};
+
+// Event listeners and initialization
 button.addEventListener('click', () => {
     appCount++;
     updateAppDisplay();
 });
 
-// Step 4 - Continuous Growth ------------------------------
-let timeStamp: number = 0;
-let appGrowth: number = 1; //base growth rate
-
-// update counter calc to increase based on time passed!!!
-const updateApps = (timestamp: number) => {
-    if (!timeStamp) timeStamp = timestamp;
-    const delta = timestamp - timeStamp;
-
-    // calc increment based on time
-    const increment = (delta / 1000) * appGrowth; // Increment by (delta ms / 1000 ms)
-    appCount += increment;
-
-    // Update the button
-    updateAppDisplay();
-
-    // Set the timeStamp to the current timestamp
-    timeStamp = timestamp;
-    
-    // Request the next animation frame
-    requestAnimationFrame(updateApps);
-}
-// Start the animation
 requestAnimationFrame(updateApps);
-
-// Status Display
-const statusDisplay = document.createElement('div');
-const growthRateDisplay = document.createElement('div');
-const upgradeCountDisplay = document.createElement('div');
-
-statusDisplay.append(growthRateDisplay);
-statusDisplay.append(upgradeCountDisplay);
-
-// updating apps display and enabling/disabling upgrade buttons
-const updateAppDisplay = () => {
-    appDisplay.textContent = `${Math.floor(appCount)} applications have been sent!`;
-
-    // Step 7 - Price Increases --------------------------
-    // Enable/disable upgrades based on the current count
-    availableUpgrades.forEach(upgrade => {
-        const currentCost = upgradeCosts.get(upgrade.name)!;
-        const upgradeButton = upgradeContainer.querySelector(`button:nth-child(${availableUpgrades.indexOf(upgrade) + 1})`) as HTMLButtonElement;
-        upgradeButton.disabled = appCount < currentCost;
-  });
-
-  // Update the growth rate display
-  growthRateDisplay.textContent = `Current growth rate: ${appCount.toFixed(1)} applications/sec`;
-
-  // Update the count of upgrades purchased
-  upgradeCountDisplay.innerHTML = `
-      Upgrades Purchased: <br>
-      ${availableUpgrades.map(upgrade => `Upgrade ${upgrade.name}: ${upgradeCounts.get(upgrade.name)}`).join('<br>')}
-  `;
-}
-
-// STYLING  ---------------------------------
-// making the button style into a function
-const styleButton = (button: HTMLButtonElement) => {
-    button.style.padding = '10px 20px';
-    button.style.fontSize = '16px';
-    button.style.marginTop = '20px';
-}
-
-// Style the premium button
-// Style all upgrade buttons in the container
-upgradeContainer.childNodes.forEach(button => styleButton(button as HTMLButtonElement));
-
-
-// styling the button
-button.style.padding = '10px 10px';
-button.style.fontSize = '28px';
-button.style.marginTop = '10px';
-
-// status display
-statusDisplay.style.marginTop = '20px';
-statusDisplay.style.fontSize = '18px';
-
-app.append(header);
-app.append(button);
-app.append(appDisplay);
-app.append(upgradeContainer);
-app.append(statusDisplay);
+app.append(header, button, appDisplay, upgradeContainer, statusDisplay);
