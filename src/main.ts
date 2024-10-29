@@ -142,5 +142,33 @@ button.addEventListener('click', () => {
     updateAppDisplay();
 });
 
+// Define initial position and direction for the title animation
+let titlePosition = 0;
+let titleDirection = 1;  // 1 for right, -1 for left
+const titleSpeed = 1;    // Pixels per frame, adjust as needed
+const titleTopPosition = 10;  // Distance from the top, adjust as needed
+
+// Update the position of the title based on direction and speed
+const animateTitle = (): void => {
+    // Update position based on the current direction
+    titlePosition += titleDirection * titleSpeed;
+
+    // Reverse direction if the title reaches the edge of the screen
+    if (titlePosition >= window.innerWidth - header.offsetWidth || titlePosition <= 0) {
+        titleDirection *= -1;
+    }
+
+    // Apply the new position
+    header.style.position = 'absolute';
+    header.style.left = `${titlePosition}px`;
+    header.style.top = `${titleTopPosition}px`;  // Set the top position
+
+    // Request the next frame
+    requestAnimationFrame(animateTitle);
+};
+
+// Start the title animation
+animateTitle();
+
 requestAnimationFrame(updateApps);
 app.append(header, button, appDisplay, upgradeContainer, statusDisplay);
