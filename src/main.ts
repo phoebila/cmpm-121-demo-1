@@ -124,6 +124,16 @@ const updateAppDisplay = (): void => {
     `;
 };
 
+// Style the container for the buttons to position it on the left
+styleElement(upgradeContainer, {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    position: 'absolute',
+    left: '20px',  // Distance from the left edge of the screen
+    top: '50px'    // Adjust top positioning as needed
+});
+
 
 
 // Event listeners and initialization
